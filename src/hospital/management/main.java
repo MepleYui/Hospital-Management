@@ -35,6 +35,9 @@ public class main extends javax.swing.JFrame {
         jPasswordField1 = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -47,6 +50,7 @@ public class main extends javax.swing.JFrame {
         jLabel1.setText("Welcome to Hospital Management");
         gradient1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(225, 25, -1, 80));
 
+        jTextField1.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField1ActionPerformed(evt);
@@ -76,8 +80,27 @@ public class main extends javax.swing.JFrame {
         jLabel4.setText("Password:");
         gradient1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 180, 80, 30));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Customer", "Employee", "Admin" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Patient", "Employee", "Admin" }));
         gradient1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 220, 100, 30));
+
+        jButton1.setText("Login");
+        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        gradient1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 260, 100, 30));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(44, 62, 80));
+        jLabel5.setText("Don't have an account?");
+        gradient1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 300, 150, 30));
+
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(0, 0, 238));
+        jButton2.setText("Sign up");
+        jButton2.setToolTipText("SIgn up");
+        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton2.setContentAreaFilled(false);
+        jButton2.setBorderPainted(false);
+        jButton2.setOpaque(false);
+        gradient1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 300, 80, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -143,11 +166,14 @@ public class main extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private hospital.management.Gradient gradient1;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables

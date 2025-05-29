@@ -11,7 +11,7 @@ public class Gradient extends JPanel {
     
     public Gradient() {
         super();
-        setOpaque(false); // Make sure the panel is transparent for the gradient to show
+        setOpaque(false);
     }
     
     @Override
@@ -19,17 +19,14 @@ public class Gradient extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         
-        // Enable anti-aliasing for smoother gradients
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         
-        // Get panel dimensions
         int width = getWidth();
         int height = getHeight();
         
-        // Create diagonal gradient (135 degrees)
         GradientPaint gradient = new GradientPaint(
-            0, 0, startColor,           // Start point and color (top-left)
-            width, height, endColor     // End point and color (bottom-right)
+            0, 0, startColor,
+            width, height, endColor
         );
         
         g2d.setPaint(gradient);
