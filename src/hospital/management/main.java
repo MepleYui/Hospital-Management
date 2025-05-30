@@ -5,17 +5,28 @@
  */
 package hospital.management;
 
-/**
- *
- * @author ''''''''''''''''''''
- */
+import java.sql.*;
+import javax.swing.*;
+
 public class main extends javax.swing.JFrame {
 
     /**
      * Creates new form main
      */
+    
+    Connection con;
     public main() {
         initComponents();
+        String db = "jdbc:mysql://localhost/hospital";
+        String user = "root";
+        String pass = "";
+        
+        try {
+            con = DriverManager.getConnection(db, user, pass);
+        }
+        catch(Exception ex) {
+            System.out.println("Error : " + ex.getMessage());
+        }
     }
 
     /**
@@ -80,7 +91,7 @@ public class main extends javax.swing.JFrame {
         jLabel4.setText("Password:");
         gradient1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 180, 80, 30));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Patient", "Employee", "Admin" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PATIENT", "EMPLOYEE", "ADMIN" }));
         gradient1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 220, 100, 30));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -102,6 +113,12 @@ public class main extends javax.swing.JFrame {
             }
         });
         gradient1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 300, 80, 30));
+
+        hospitalPrimaryButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                hospitalPrimaryButton1MouseClicked(evt);
+            }
+        });
         gradient1.add(hospitalPrimaryButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 260, 100, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -136,6 +153,37 @@ public class main extends javax.swing.JFrame {
         signUp.setLocationRelativeTo(this);
         signUp.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void hospitalPrimaryButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_hospitalPrimaryButton1MouseClicked
+        String user = jTextField1.getText();
+        char[] objpassword = jPasswordField1.getPassword();
+        String password = String.valueOf(objpassword);
+        Object objtype = jComboBox1.getSelectedItem();
+        String type = String.valueOf(objtype);
+        
+        String sql = "SELECT * FROM accounts WHERE user = ? AND password = ? AND approved = 'true' AND type = ?";
+        
+        try {
+            PreparedStatement pst = con.prepareStatement(sql);
+
+            pst.setString(1, user);
+            pst.setString(2, password);
+            pst.setString(3, type);
+
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(null, "Login successful. Type: " + rs.getString("type"));
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid login, not approved, or wrong type.");
+            }
+
+            pst.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error " + ex.getMessage());
+        }
+    }//GEN-LAST:event_hospitalPrimaryButton1MouseClicked
 
     /**
      * @param args the command line arguments

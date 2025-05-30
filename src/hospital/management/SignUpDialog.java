@@ -1,22 +1,30 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package hospital.management;
 
-/**
- *
- * @author ''''''''''''''''''''
- */
+import java.sql.*;
+import javax.swing.*;
+
 public class SignUpDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form SignUpDialog
      */
+    
+    Connection con;
     public SignUpDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        String db = "jdbc:mysql://localhost/hospital";
+        String user = "root";
+        String pass = "";
+        
+        try {
+            con = DriverManager.getConnection(db, user, pass);
+        }
+        catch(Exception ex) {
+            System.out.println("Error : " + ex.getMessage());
+        }
     }
 
     /**
@@ -104,14 +112,19 @@ public class SignUpDialog extends javax.swing.JDialog {
         gradient1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 220, 100, 30));
 
         hospitalSuccessButton1.setText("Register");
-        gradient1.add(hospitalSuccessButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, -1, -1));
+        hospitalSuccessButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalSuccessButton1ActionPerformed(evt);
+            }
+        });
+        gradient1.add(hospitalSuccessButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 280, -1, -1));
 
         hospitalSecondaryButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hospitalSecondaryButton1ActionPerformed(evt);
             }
         });
-        gradient1.add(hospitalSecondaryButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 270, -1, -1));
+        gradient1.add(hospitalSecondaryButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 280, -1, -1));
 
         getContentPane().add(gradient1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 300, 380));
 
@@ -133,6 +146,44 @@ public class SignUpDialog extends javax.swing.JDialog {
     private void hospitalSecondaryButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalSecondaryButton1ActionPerformed
         dispose();
     }//GEN-LAST:event_hospitalSecondaryButton1ActionPerformed
+
+    private void hospitalSuccessButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalSuccessButton1ActionPerformed
+        // TODO add your handling code here
+        
+        String user = jTextField1.getText();
+        String password = jTextField2.getText();
+        String retype = jTextField3.getText();
+        String type = jComboBox1.getSelectedItem().toString();
+        String approved = "false";
+        
+        String sql = "INSERT INTO accounts (user, password, type, approved) VALUES (?, ?, ?, ?)";
+        
+        if (retype.equals(password)) {
+            try {
+                PreparedStatement pst = con.prepareStatement(sql);
+
+                pst.setString(1, user);
+                pst.setString(2, password);
+                pst.setString(3, type);
+                pst.setString(4, approved);
+
+                int rowsAffected = pst.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null, "Registered Complete!");
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Failed to Register your account.");
+                }
+
+                pst.close();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error adding account to databse " + ex.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Your password does not match!");
+        }
+    }//GEN-LAST:event_hospitalSuccessButton1ActionPerformed
 
     /**
      * @param args the command line arguments
