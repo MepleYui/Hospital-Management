@@ -35,9 +35,9 @@ public class main extends javax.swing.JFrame {
         jPasswordField1 = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        hospitalPrimaryButton1 = new hospital.management.HospitalPrimaryButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -83,10 +83,6 @@ public class main extends javax.swing.JFrame {
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Patient", "Employee", "Admin" }));
         gradient1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 220, 100, 30));
 
-        jButton1.setText("Login");
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        gradient1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 260, 100, 30));
-
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(44, 62, 80));
         jLabel5.setText("Don't have an account?");
@@ -101,6 +97,7 @@ public class main extends javax.swing.JFrame {
         jButton2.setBorderPainted(false);
         jButton2.setOpaque(false);
         gradient1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 300, 80, 30));
+        gradient1.add(hospitalPrimaryButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 260, 100, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -166,7 +163,7 @@ public class main extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private hospital.management.Gradient gradient1;
-    private javax.swing.JButton jButton1;
+    private hospital.management.HospitalPrimaryButton hospitalPrimaryButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
