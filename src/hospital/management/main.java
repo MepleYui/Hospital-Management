@@ -96,6 +96,11 @@ public class main extends javax.swing.JFrame {
         jButton2.setContentAreaFilled(false);
         jButton2.setBorderPainted(false);
         jButton2.setOpaque(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         gradient1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 300, 80, 30));
         gradient1.add(hospitalPrimaryButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 260, 100, 30));
 
@@ -125,6 +130,12 @@ public class main extends javax.swing.JFrame {
     private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jPasswordField1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        SignUpDialog signUp = new SignUpDialog(this, true);
+        signUp.setLocationRelativeTo(this);
+        signUp.setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments

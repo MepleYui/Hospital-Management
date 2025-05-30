@@ -16,6 +16,10 @@ public class AdminPanel extends javax.swing.JFrame {
      */
     public AdminPanel() {
         initComponents();
+        accountspanel.setVisible(false);
+        approvalspanel.setVisible(false);
+        billspanel.setVisible(false);
+        transactionpanel.setVisible(false);
     }
 
     /**
@@ -26,29 +30,43 @@ public class AdminPanel extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         gradient22 = new hospital.management.Gradient2();
-        jPanel4 = new javax.swing.JPanel();
+        sidepanel = new javax.swing.JPanel();
         gradient24 = new hospital.management.Gradient2();
-        jPanel5 = new javax.swing.JPanel();
+        homeside = new javax.swing.JPanel();
         gradient29 = new hospital.management.Gradient2();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jPanel6 = new javax.swing.JPanel();
+        accountsside = new javax.swing.JPanel();
         gradient25 = new hospital.management.Gradient2();
         jLabel2 = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
+        approvalsside = new javax.swing.JPanel();
         gradient26 = new hospital.management.Gradient2();
         jLabel3 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
+        billsside = new javax.swing.JPanel();
         gradient27 = new hospital.management.Gradient2();
         jLabel4 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        transactionsside = new javax.swing.JPanel();
         gradient21 = new hospital.management.Gradient2();
         jLabel5 = new javax.swing.JLabel();
+        accountspanel = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        gradient23 = new hospital.management.Gradient2();
+        approvalspanel = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        gradient28 = new hospital.management.Gradient2();
+        billspanel = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        gradient30 = new hospital.management.Gradient2();
+        transactionpanel = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        gradient31 = new hospital.management.Gradient2();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         gradient22.setMaximumSize(new java.awt.Dimension(854, 480));
         gradient22.setMinimumSize(new java.awt.Dimension(854, 480));
@@ -56,13 +74,13 @@ public class AdminPanel extends javax.swing.JFrame {
 
         gradient24.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel5.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jPanel5.addMouseListener(new java.awt.event.MouseAdapter() {
+        homeside.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        homeside.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jPanel5MouseClicked(evt);
+                homesideMouseClicked(evt);
             }
         });
-        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        homeside.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         gradient29.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -70,20 +88,25 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(44, 62, 80));
         jLabel1.setText("HOME");
         jLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel1MouseClicked(evt);
+            }
+        });
         gradient29.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 120, -1, -1));
         gradient29.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, -1, -1));
 
-        jPanel5.add(gradient29, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -110, 220, 480));
+        homeside.add(gradient29, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -110, 220, 480));
 
-        gradient24.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 220, 40));
+        gradient24.add(homeside, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 220, 40));
 
-        jPanel6.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jPanel6.addMouseListener(new java.awt.event.MouseAdapter() {
+        accountsside.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        accountsside.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jPanel6MouseClicked(evt);
+                accountssideMouseClicked(evt);
             }
         });
-        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        accountsside.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         gradient25.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -91,13 +114,18 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(44, 62, 80));
         jLabel2.setText("ACCOUNTS");
         jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
         gradient25.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(73, 160, -1, -1));
 
-        jPanel6.add(gradient25, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -150, 220, 480));
+        accountsside.add(gradient25, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -150, 220, 480));
 
-        gradient24.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 220, 40));
+        gradient24.add(accountsside, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 220, 40));
 
-        jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        approvalsside.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         gradient26.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -105,13 +133,18 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(44, 62, 80));
         jLabel3.setText("APPROVALS");
         jLabel3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
         gradient26.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 200, -1, -1));
 
-        jPanel7.add(gradient26, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -190, 220, 480));
+        approvalsside.add(gradient26, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -190, 220, 480));
 
-        gradient24.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 220, 40));
+        gradient24.add(approvalsside, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 220, 40));
 
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        billsside.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         gradient27.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -119,13 +152,18 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(44, 62, 80));
         jLabel4.setText("BILLS");
         jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel4MouseClicked(evt);
+            }
+        });
         gradient27.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(93, 240, -1, -1));
 
-        jPanel8.add(gradient27, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -230, 220, 480));
+        billsside.add(gradient27, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -230, 220, 480));
 
-        gradient24.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 220, 40));
+        gradient24.add(billsside, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 220, 40));
 
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        transactionsside.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         gradient21.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -133,47 +171,163 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(44, 62, 80));
         jLabel5.setText("TRANSACTIONS");
         jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel5MouseClicked(evt);
+            }
+        });
         gradient21.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(58, 280, -1, -1));
 
-        jPanel1.add(gradient21, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -270, 220, 480));
+        transactionsside.add(gradient21, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -270, 220, 480));
 
-        gradient24.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 220, 40));
+        gradient24.add(transactionsside, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 220, 40));
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout sidepanelLayout = new javax.swing.GroupLayout(sidepanel);
+        sidepanel.setLayout(sidepanelLayout);
+        sidepanelLayout.setHorizontalGroup(
+            sidepanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(gradient24, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        sidepanelLayout.setVerticalGroup(
+            sidepanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(gradient24, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        gradient22.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 220, 480));
+        gradient22.add(sidepanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 220, 480));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(gradient22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        accountspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel6.setText("Accounts");
+        accountspanel.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(276, 100, -1, -1));
+
+        javax.swing.GroupLayout gradient23Layout = new javax.swing.GroupLayout(gradient23);
+        gradient23.setLayout(gradient23Layout);
+        gradient23Layout.setHorizontalGroup(
+            gradient23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 860, Short.MAX_VALUE)
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(gradient22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        gradient23Layout.setVerticalGroup(
+            gradient23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
         );
+
+        accountspanel.add(gradient23, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
+
+        gradient22.add(accountspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+
+        approvalspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel7.setText("jLabel7");
+        approvalspanel.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(268, 96, -1, -1));
+
+        javax.swing.GroupLayout gradient28Layout = new javax.swing.GroupLayout(gradient28);
+        gradient28.setLayout(gradient28Layout);
+        gradient28Layout.setHorizontalGroup(
+            gradient28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 860, Short.MAX_VALUE)
+        );
+        gradient28Layout.setVerticalGroup(
+            gradient28Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        approvalspanel.add(gradient28, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
+
+        gradient22.add(approvalspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+
+        billspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel8.setText("jLabel8");
+        billspanel.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(293, 128, -1, -1));
+
+        javax.swing.GroupLayout gradient30Layout = new javax.swing.GroupLayout(gradient30);
+        gradient30.setLayout(gradient30Layout);
+        gradient30Layout.setHorizontalGroup(
+            gradient30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 860, Short.MAX_VALUE)
+        );
+        gradient30Layout.setVerticalGroup(
+            gradient30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        billspanel.add(gradient30, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
+
+        gradient22.add(billspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+
+        transactionpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel9.setText("jLabel9");
+        transactionpanel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(244, 113, -1, -1));
+
+        javax.swing.GroupLayout gradient31Layout = new javax.swing.GroupLayout(gradient31);
+        gradient31.setLayout(gradient31Layout);
+        gradient31Layout.setHorizontalGroup(
+            gradient31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 860, Short.MAX_VALUE)
+        );
+        gradient31Layout.setVerticalGroup(
+            gradient31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        transactionpanel.add(gradient31, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
+
+        gradient22.add(transactionpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        getContentPane().add(gradient22, gridBagConstraints);
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jPanel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel5MouseClicked
+    private void homesideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homesideMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_jPanel5MouseClicked
+    }//GEN-LAST:event_homesideMouseClicked
 
-    private void jPanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel6MouseClicked
+    private void accountssideMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accountssideMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_jPanel6MouseClicked
+    }//GEN-LAST:event_accountssideMouseClicked
+
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+        accountspanel.setVisible(false);
+        approvalspanel.setVisible(false);
+        billspanel.setVisible(false);
+        transactionpanel.setVisible(false);
+    }//GEN-LAST:event_jLabel1MouseClicked
+
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+        approvalspanel.setVisible(false);
+        billspanel.setVisible(false);
+        transactionpanel.setVisible(false);
+        accountspanel.setVisible(true);
+    }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+        accountspanel.setVisible(false);
+        billspanel.setVisible(false);
+        transactionpanel.setVisible(false);
+        approvalspanel.setVisible(true);
+    }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        accountspanel.setVisible(false);
+        approvalspanel.setVisible(false);
+        transactionpanel.setVisible(false);
+        billspanel.setVisible(true);
+    }//GEN-LAST:event_jLabel4MouseClicked
+
+    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
+        accountspanel.setVisible(false);
+        approvalspanel.setVisible(false);
+        billspanel.setVisible(false);
+        transactionpanel.setVisible(true);
+    }//GEN-LAST:event_jLabel5MouseClicked
 
     /**
      * @param args the command line arguments
@@ -211,24 +365,36 @@ public class AdminPanel extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel accountspanel;
+    private javax.swing.JPanel accountsside;
+    private javax.swing.JPanel approvalspanel;
+    private javax.swing.JPanel approvalsside;
+    private javax.swing.JPanel billspanel;
+    private javax.swing.JPanel billsside;
     private hospital.management.Gradient2 gradient21;
     private hospital.management.Gradient2 gradient22;
+    private hospital.management.Gradient2 gradient23;
     private hospital.management.Gradient2 gradient24;
     private hospital.management.Gradient2 gradient25;
     private hospital.management.Gradient2 gradient26;
     private hospital.management.Gradient2 gradient27;
+    private hospital.management.Gradient2 gradient28;
     private hospital.management.Gradient2 gradient29;
+    private hospital.management.Gradient2 gradient30;
+    private hospital.management.Gradient2 gradient31;
+    private javax.swing.JPanel homeside;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPanel sidepanel;
+    private javax.swing.JPanel transactionpanel;
+    private javax.swing.JPanel transactionsside;
     // End of variables declaration//GEN-END:variables
 }
