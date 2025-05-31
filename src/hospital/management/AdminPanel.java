@@ -1,25 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hospital.management;
 
-/**
- *
- * @author ''''''''''''''''''''
- */
+import java.sql.*;
+import java.util.HashMap;
+import javax.swing.*;
+
 public class AdminPanel extends javax.swing.JFrame {
 
     /**
      * Creates new form AdminPanel
      */
-    public AdminPanel() {
+    Connection con;
+    public AdminPanel(HashMap<String, String> userData) {
         initComponents();
         accountspanel.setVisible(false);
         approvalspanel.setVisible(false);
         billspanel.setVisible(false);
         transactionpanel.setVisible(false);
+        
+        String username = userData.get("username");
+        namelabel.setText(username);
+    }
+    
+    public AdminPanel() {
+        initComponents();
     }
 
     /**
@@ -63,6 +66,8 @@ public class AdminPanel extends javax.swing.JFrame {
         transactionpanel = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         gradient31 = new hospital.management.Gradient2();
+        jLabel10 = new javax.swing.JLabel();
+        namelabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -275,6 +280,17 @@ public class AdminPanel extends javax.swing.JFrame {
 
         gradient22.add(transactionpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
 
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(44, 62, 80));
+        jLabel10.setText("Welcome Back");
+        gradient22.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 40, -1, -1));
+
+        namelabel.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        namelabel.setForeground(new java.awt.Color(44, 62, 80));
+        namelabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        namelabel.setText("...");
+        gradient22.add(namelabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 90, 430, -1));
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -384,6 +400,7 @@ public class AdminPanel extends javax.swing.JFrame {
     private hospital.management.Gradient2 gradient31;
     private javax.swing.JPanel homeside;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -393,6 +410,7 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel namelabel;
     private javax.swing.JPanel sidepanel;
     private javax.swing.JPanel transactionpanel;
     private javax.swing.JPanel transactionsside;

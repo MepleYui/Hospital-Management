@@ -6,6 +6,7 @@
 package hospital.management;
 
 import java.sql.*;
+import java.util.HashMap;
 import javax.swing.*;
 
 public class main extends javax.swing.JFrame {
@@ -27,6 +28,7 @@ public class main extends javax.swing.JFrame {
         catch(Exception ex) {
             System.out.println("Error : " + ex.getMessage());
         }
+        
     }
 
     /**
@@ -119,6 +121,11 @@ public class main extends javax.swing.JFrame {
                 hospitalPrimaryButton1MouseClicked(evt);
             }
         });
+        hospitalPrimaryButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalPrimaryButton1ActionPerformed(evt);
+            }
+        });
         gradient1.add(hospitalPrimaryButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 260, 100, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -156,6 +163,7 @@ public class main extends javax.swing.JFrame {
 
     private void hospitalPrimaryButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_hospitalPrimaryButton1MouseClicked
         String user = jTextField1.getText();
+        String username = jTextField1.getText();
         char[] objpassword = jPasswordField1.getPassword();
         String password = String.valueOf(objpassword);
         Object objtype = jComboBox1.getSelectedItem();
@@ -174,6 +182,10 @@ public class main extends javax.swing.JFrame {
 
             if (rs.next()) {
                 JOptionPane.showMessageDialog(null, "Login successful. Type: " + rs.getString("type"));
+                HashMap<String, String> userData = new HashMap<>();
+                userData.put("username", jTextField1.getText());
+                AdminPanel adminPanel = new AdminPanel(userData);
+                adminPanel.setVisible(true);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid login, not approved, or wrong type.");
@@ -184,6 +196,10 @@ public class main extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error " + ex.getMessage());
         }
     }//GEN-LAST:event_hospitalPrimaryButton1MouseClicked
+
+    private void hospitalPrimaryButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalPrimaryButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_hospitalPrimaryButton1ActionPerformed
 
     /**
      * @param args the command line arguments
