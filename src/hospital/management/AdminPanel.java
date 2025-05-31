@@ -90,18 +90,36 @@ public class AdminPanel extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "No database connection!", "Database Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         try {
+            // First check if username already exists
+            String checkQuery = "SELECT COUNT(*) FROM accounts WHERE user = ?";
+            PreparedStatement checkPst = con.prepareStatement(checkQuery);
+            checkPst.setString(1, user);
+            ResultSet rs = checkPst.executeQuery();
+
+            if (rs.next() && rs.getInt(1) > 0) {
+                // Username already exists
+                rs.close();
+                checkPst.close();
+                JOptionPane.showMessageDialog(this, "Username '" + user + "' is already taken. Please choose a different username.", "Username Taken", JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
+
+            rs.close();
+            checkPst.close();
+
+            // If username is available, proceed with insertion
             String query = "INSERT INTO accounts (user, password, type, approved) VALUES (?, ?, ?, ?)";
             PreparedStatement pst = con.prepareStatement(query);
             pst.setString(1, user);
             pst.setString(2, password);
             pst.setString(3, type);
             pst.setString(4, approved);
-            
+
             int result = pst.executeUpdate();
             pst.close();
-            
+
             if (result > 0) {
                 // Add to table display
                 Object[] newRow = {user, password, type, approved};
@@ -109,7 +127,7 @@ public class AdminPanel extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Account added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 return true;
             }
-            
+
         } catch (SQLException ex) {
             System.out.println("Error adding account: " + ex.getMessage());
             JOptionPane.showMessageDialog(this, "Error adding account: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);

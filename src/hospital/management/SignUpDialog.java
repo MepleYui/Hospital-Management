@@ -151,38 +151,53 @@ public class SignUpDialog extends javax.swing.JDialog {
         // TODO add your handling code here
         
         String user = jTextField1.getText();
-        String password = jTextField2.getText();
-        String retype = jTextField3.getText();
-        String type = jComboBox1.getSelectedItem().toString();
-        String approved = "false";
-        
-        String sql = "INSERT INTO accounts (user, password, type, approved) VALUES (?, ?, ?, ?)";
-        
-        if (retype.equals(password)) {
-            try {
-                PreparedStatement pst = con.prepareStatement(sql);
+    String password = jTextField2.getText();
+    String retype = jTextField3.getText();
+    String type = jComboBox1.getSelectedItem().toString();
+    String approved = "false";
 
-                pst.setString(1, user);
-                pst.setString(2, password);
-                pst.setString(3, type);
-                pst.setString(4, approved);
+    if (retype.equals(password)) {
+        try {
+            // First check if username already exists
+            String checkQuery = "SELECT COUNT(*) FROM accounts WHERE user = ?";
+            PreparedStatement checkPst = con.prepareStatement(checkQuery);
+            checkPst.setString(1, user);
+            ResultSet rs = checkPst.executeQuery();
 
-                int rowsAffected = pst.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(null, "Registered Complete!");
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Failed to Register your account.");
-                }
-
-                pst.close();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Error adding account to databse " + ex.getMessage());
+            if (rs.next() && rs.getInt(1) > 0) {
+                // Username already exists
+                rs.close();
+                checkPst.close();
+                JOptionPane.showMessageDialog(null, "Username '" + user + "' is already taken. Please choose a different username.", "Username Taken", JOptionPane.WARNING_MESSAGE);
+                return; // or continue to allow user to try again
             }
-        } else {
-            JOptionPane.showMessageDialog(null, "Your password does not match!");
+
+            rs.close();
+            checkPst.close();
+
+            // If username is available, proceed with registration
+            String sql = "INSERT INTO accounts (user, password, type, approved) VALUES (?, ?, ?, ?)";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, user);
+            pst.setString(2, password);
+            pst.setString(3, type);
+            pst.setString(4, approved);
+
+            int rowsAffected = pst.executeUpdate();
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Registered Complete!");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to Register your account.");
+            }
+            pst.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error adding account to database: " + ex.getMessage());
         }
+    } else {
+        JOptionPane.showMessageDialog(null, "Your password does not match!");
+    }
     }//GEN-LAST:event_hospitalSuccessButton1ActionPerformed
 
     /**
