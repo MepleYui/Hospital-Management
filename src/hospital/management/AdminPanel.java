@@ -35,6 +35,8 @@ public class AdminPanel extends javax.swing.JFrame {
         billspanel.setVisible(false);
         transactionpanel.setVisible(false);
         loadAccountsFromDatabase();
+        updateRegisteredAccountsCount();
+        updateApprovalsCount();
         
         String username = userData.get("username");
         namelabel.setText(username);
@@ -42,6 +44,62 @@ public class AdminPanel extends javax.swing.JFrame {
     
     public AdminPanel() {
         initComponents();
+    }
+    
+    //Counts all registered accounts
+    public void updateRegisteredAccountsCount() {
+        if (con == null) {
+            labelregister.setText("Database Error");
+            return;
+        }
+
+        try {
+            String query = "SELECT COUNT(*) FROM accounts WHERE approved = 'true'";
+            PreparedStatement pst = con.prepareStatement(query);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                int registeredCount = rs.getInt(1);
+                labelregister.setText(String.valueOf(registeredCount));
+            } else {
+                labelregister.setText("0");
+            }
+
+            rs.close();
+            pst.close();
+
+        } catch (SQLException ex) {
+            System.out.println("Error counting registered accounts: " + ex.getMessage());
+            labelregister.setText("Error counting accounts");
+        }
+    }
+    
+    //Counts all unapproved accounts
+    public void updateApprovalsCount() {
+        if (con == null) {
+            labelregister.setText("Database Error");
+            return;
+        }
+
+        try {
+            String query = "SELECT COUNT(*) FROM accounts WHERE approved = 'false'";
+            PreparedStatement pst = con.prepareStatement(query);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                int registeredCount = rs.getInt(1);
+                labelapproval.setText(String.valueOf(registeredCount));
+            } else {
+                labelapproval.setText("0");
+            }
+
+            rs.close();
+            pst.close();
+
+        } catch (SQLException ex) {
+            System.out.println("Error counting registered accounts: " + ex.getMessage());
+            labelregister.setText("Error counting accounts");
+        }
     }
     
     //load all accounts from database into the table
@@ -362,7 +420,6 @@ public class AdminPanel extends javax.swing.JFrame {
         hospitalEmergencyButton2 = new hospital.management.HospitalEmergencyButton();
         hospitalPrimaryButton1 = new hospital.management.HospitalPrimaryButton();
         approvalspanel = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
         gradient28 = new hospital.management.Gradient2();
         billspanel = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -391,6 +448,8 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         labelbill = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        labelregister = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -553,6 +612,9 @@ public class AdminPanel extends javax.swing.JFrame {
         gradient23.add(hospitalEmergencyButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 420, 190, -1));
 
         searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                searchTextFieldKeyTyped(evt);
+            }
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 searchTextFieldKeyPressed(evt);
             }
@@ -591,9 +653,6 @@ public class AdminPanel extends javax.swing.JFrame {
         gradient22.add(accountspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 640, 480));
 
         approvalspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel7.setText("jLabel7");
-        approvalspanel.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(268, 96, -1, -1));
 
         javax.swing.GroupLayout gradient28Layout = new javax.swing.GroupLayout(gradient28);
         gradient28.setLayout(gradient28Layout);
@@ -781,6 +840,16 @@ public class AdminPanel extends javax.swing.JFrame {
         labelbill.setText("0");
         gradient22.add(labelbill, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 220, 40, -1));
 
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(44, 62, 80));
+        jLabel18.setText("Total Registered Accoutns:");
+        gradient22.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 260, -1, -1));
+
+        labelregister.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        labelregister.setForeground(new java.awt.Color(44, 62, 80));
+        labelregister.setText("0");
+        gradient22.add(labelregister, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 260, 40, -1));
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -801,6 +870,8 @@ public class AdminPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_accountssideMouseClicked
 
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+        updateRegisteredAccountsCount();
+        updateApprovalsCount();
         accountspanel.setVisible(false);
         approvalspanel.setVisible(false);
         billspanel.setVisible(false);
@@ -908,6 +979,10 @@ public class AdminPanel extends javax.swing.JFrame {
         refreshTable();
     }//GEN-LAST:event_hospitalPrimaryButton1ActionPerformed
 
+    private void searchTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyTyped
+        //NOTHING TO USE
+    }//GEN-LAST:event_searchTextFieldKeyTyped
+
     /**
      * @param args the command line arguments
      */
@@ -988,16 +1063,17 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel labelapproval;
     private javax.swing.JLabel labelbill;
+    private javax.swing.JLabel labelregister;
     private javax.swing.JLabel namelabel;
     private javax.swing.JComboBox<String> searchColumnComboBox;
     private javax.swing.JTextField searchTextField;
