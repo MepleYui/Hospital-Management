@@ -1,8 +1,12 @@
 package hospital.management;
 
+import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.util.HashMap;
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
 
 public class AdminPanel extends javax.swing.JFrame {
 
@@ -10,12 +14,27 @@ public class AdminPanel extends javax.swing.JFrame {
      * Creates new form AdminPanel
      */
     Connection con;
+    
+    private AdminTable accountTable;
+    
     public AdminPanel(HashMap<String, String> userData) {
         initComponents();
+        String db = "jdbc:mysql://localhost/hospital";
+        String user = "root";
+        String pass = "";
+        
+        try {
+            con = DriverManager.getConnection(db, user, pass);
+        }
+        catch(Exception ex) {
+            System.out.println("Error : " + ex.getMessage());
+        }
+        
         accountspanel.setVisible(false);
         approvalspanel.setVisible(false);
         billspanel.setVisible(false);
         transactionpanel.setVisible(false);
+        loadAccountsFromDatabase();
         
         String username = userData.get("username");
         namelabel.setText(username);
@@ -23,6 +42,265 @@ public class AdminPanel extends javax.swing.JFrame {
     
     public AdminPanel() {
         initComponents();
+    }
+    
+    //load all accounts from database into the table
+    public void loadAccountsFromDatabase() {
+        if (con == null) {
+            JOptionPane.showMessageDialog(this, "No database connection!", 
+                                        "Database Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            String query = "SELECT user, password, type, approved FROM accounts";
+            PreparedStatement pst = con.prepareStatement(query);
+            ResultSet rs = pst.executeQuery();
+            
+            // Create list to store data
+            List<Object[]> dataList = new ArrayList<>();
+            
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("user"),
+                    rs.getString("password"),
+                    rs.getString("type"),
+                    rs.getString("approved")
+                };
+                dataList.add(row);
+            }
+            
+            // Convert list to array and load into table
+            Object[][] data = dataList.toArray(new Object[0][]);
+            adminTable.loadDataFromDatabase(data);
+            
+            rs.close();
+            pst.close();
+            
+        } catch (SQLException ex) {
+            System.out.println("Error loading accounts: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error loading accounts: " + ex.getMessage(), 
+                                        "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    //Add accounts to database
+    public boolean addAccountToDatabase(String user, String password, String type, String approved) {
+        if (con == null) {
+            JOptionPane.showMessageDialog(this, "No database connection!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        try {
+            String query = "INSERT INTO accounts (user, password, type, approved) VALUES (?, ?, ?, ?)";
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setString(1, user);
+            pst.setString(2, password);
+            pst.setString(3, type);
+            pst.setString(4, approved);
+            
+            int result = pst.executeUpdate();
+            pst.close();
+            
+            if (result > 0) {
+                // Add to table display
+                Object[] newRow = {user, password, type, approved};
+                adminTable.addUser(newRow);
+                JOptionPane.showMessageDialog(this, "Account added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            }
+            
+        } catch (SQLException ex) {
+            System.out.println("Error adding account: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error adding account: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
+    }
+    
+    //Edit stuff on Database
+    public boolean updateAccountInDatabase(String oldUser, String newUser, String password, String type, String approved) {
+        if (con == null) {
+            JOptionPane.showMessageDialog(this, "No database connection!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        try {
+            String query = "UPDATE accounts SET user=?, password=?, type=?, approved=? WHERE user=?";
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setString(1, newUser);
+            pst.setString(2, password);
+            pst.setString(3, type);
+            pst.setString(4, approved);
+            pst.setString(5, oldUser);
+            
+            int result = pst.executeUpdate();
+            pst.close();
+            
+            if (result > 0) {
+                // Refresh table data
+                loadAccountsFromDatabase();
+                JOptionPane.showMessageDialog(this, "Account updated successfully!", 
+                                            "Success", JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(this, "Account not found or no changes made!", 
+                                            "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+            
+        } catch (SQLException ex) {
+            System.out.println("Error updating account: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error updating account: " + ex.getMessage(), 
+                                        "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
+    }
+    
+    //Delete stuff from database
+    public boolean deleteAccountFromDatabase(String user) {
+        if (con == null) {
+            JOptionPane.showMessageDialog(this, "No database connection!", 
+                                        "Database Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        try {
+            // Confirm deletion
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to delete account: " + user + "?", 
+                "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                String query = "DELETE FROM accounts WHERE user=?";
+                PreparedStatement pst = con.prepareStatement(query);
+                pst.setString(1, user);
+                
+                int result = pst.executeUpdate();
+                pst.close();
+                
+                if (result > 0) {
+                    // Remove from table display
+                    int selectedRow = adminTable.getSelectedRow();
+                    if (selectedRow >= 0) {
+                        adminTable.removeUser(selectedRow);
+                    }
+                    JOptionPane.showMessageDialog(this, "Account deleted successfully!", 
+                                                "Success", JOptionPane.INFORMATION_MESSAGE);
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Account not found!", 
+                                                "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+            
+        } catch (SQLException ex) {
+            System.out.println("Error deleting account: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error deleting account: " + ex.getMessage(), 
+                                        "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
+    }
+    
+    //Refresh Table
+    public void refreshTable() {
+        loadAccountsFromDatabase();
+    }
+    
+    // Method to get selected account data for editing
+    public Object[] getSelectedAccountData() {
+        int selectedRow = adminTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            return adminTable.getRowData(selectedRow);
+        }
+        return null;
+    }
+    
+    public void closeDatabaseConnection() {
+        try {
+            if (con != null && !con.isClosed()) {
+                con.close();
+                System.out.println("Database connection closed.");
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error closing database connection: " + ex.getMessage());
+        }
+    }
+    
+    
+    //-------SEARCH FUNCTIONS----------
+    
+    private void performSearch() {
+        String searchTerm = searchTextField.getText().trim();
+        String searchColumn = (String) searchColumnComboBox.getSelectedItem();
+        
+        if (searchTerm.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a search term!", "Empty Search", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        searchAccount(searchTerm, searchColumn);
+    }
+    
+    private void clearSearch() {
+        searchTextField.setText("");
+        loadAccountsFromDatabase();
+    }
+    
+    public void searchAccount(String searchTerm, String searchColumn) {
+        if (con == null) {
+            JOptionPane.showMessageDialog(this, "No database connection!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (adminTable == null) {
+            JOptionPane.showMessageDialog(this, "Table not initialized!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            String[] validColumns = {"user", "password", "type", "approved"};
+            boolean validColumn = false;
+            for (String col : validColumns) {
+                if (col.equals(searchColumn)) {
+                    validColumn = true;
+                    break;
+                }
+            }
+
+            if (!validColumn) {
+                JOptionPane.showMessageDialog(this, "Invalid search column!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String query = "SELECT user, password, type, approved FROM accounts WHERE " + searchColumn + " LIKE ?";
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setString(1, searchTerm + "%");  // Changed from "%" + searchTerm + "%" to searchTerm + "%"
+            ResultSet rs = pst.executeQuery();
+
+            List<Object[]> dataList = new ArrayList<>();
+
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("user"),
+                    rs.getString("password"),
+                    rs.getString("type"),
+                    rs.getString("approved")
+                };
+                dataList.add(row);
+            }
+
+            Object[][] data = dataList.toArray(new Object[0][]);
+            adminTable.loadDataFromDatabase(data);
+
+            if (dataList.size() == 0) {
+                JOptionPane.showMessageDialog(this, "No accounts found matching your search criteria.", "No Results", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            rs.close();
+            pst.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error searching accounts: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -55,19 +333,46 @@ public class AdminPanel extends javax.swing.JFrame {
         gradient21 = new hospital.management.Gradient2();
         jLabel5 = new javax.swing.JLabel();
         accountspanel = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
         gradient23 = new hospital.management.Gradient2();
+        adminTable = new hospital.management.AdminTable();
+        hospitalSuccessButton1 = new hospital.management.HospitalSuccessButton();
+        hospitalSuccessButton2 = new hospital.management.HospitalSuccessButton();
+        hospitalEmergencyButton1 = new hospital.management.HospitalEmergencyButton();
+        searchTextField = new javax.swing.JTextField();
+        searchColumnComboBox = new javax.swing.JComboBox<>();
+        hospitalSuccessButton3 = new hospital.management.HospitalSuccessButton();
+        hospitalEmergencyButton2 = new hospital.management.HospitalEmergencyButton();
+        hospitalPrimaryButton1 = new hospital.management.HospitalPrimaryButton();
         approvalspanel = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         gradient28 = new hospital.management.Gradient2();
         billspanel = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         gradient30 = new hospital.management.Gradient2();
+        accountspanel1 = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        gradient32 = new hospital.management.Gradient2();
+        approvalspanel1 = new javax.swing.JPanel();
+        jLabel14 = new javax.swing.JLabel();
+        gradient33 = new hospital.management.Gradient2();
+        billspanel1 = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        gradient34 = new hospital.management.Gradient2();
+        accountspanel2 = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        gradient35 = new hospital.management.Gradient2();
+        approvalspanel2 = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
+        gradient36 = new hospital.management.Gradient2();
         transactionpanel = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         gradient31 = new hospital.management.Gradient2();
         jLabel10 = new javax.swing.JLabel();
         namelabel = new javax.swing.JLabel();
+        labelapproval = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        labelbill = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -202,23 +507,70 @@ public class AdminPanel extends javax.swing.JFrame {
 
         accountspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel6.setText("Accounts");
-        accountspanel.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(276, 100, -1, -1));
+        gradient23.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        gradient23.add(adminTable, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 410, 480));
 
-        javax.swing.GroupLayout gradient23Layout = new javax.swing.GroupLayout(gradient23);
-        gradient23.setLayout(gradient23Layout);
-        gradient23Layout.setHorizontalGroup(
-            gradient23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 860, Short.MAX_VALUE)
-        );
-        gradient23Layout.setVerticalGroup(
-            gradient23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 480, Short.MAX_VALUE)
-        );
+        hospitalSuccessButton1.setText("Add");
+        hospitalSuccessButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalSuccessButton1ActionPerformed(evt);
+            }
+        });
+        gradient23.add(hospitalSuccessButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 370, 90, -1));
+
+        hospitalSuccessButton2.setText("Edit");
+        hospitalSuccessButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalSuccessButton2ActionPerformed(evt);
+            }
+        });
+        gradient23.add(hospitalSuccessButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 370, 90, -1));
+
+        hospitalEmergencyButton1.setText("Delete");
+        hospitalEmergencyButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalEmergencyButton1ActionPerformed(evt);
+            }
+        });
+        gradient23.add(hospitalEmergencyButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 420, 190, -1));
+
+        searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchTextFieldKeyPressed(evt);
+            }
+        });
+        gradient23.add(searchTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 20, 190, 30));
+
+        searchColumnComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "user", "password", "type", "approved" }));
+        gradient23.add(searchColumnComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 60, 190, -1));
+
+        hospitalSuccessButton3.setText("Search");
+        hospitalSuccessButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalSuccessButton3ActionPerformed(evt);
+            }
+        });
+        gradient23.add(hospitalSuccessButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 90, 80, -1));
+
+        hospitalEmergencyButton2.setText("Clear");
+        hospitalEmergencyButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalEmergencyButton2ActionPerformed(evt);
+            }
+        });
+        gradient23.add(hospitalEmergencyButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 90, 80, -1));
+
+        hospitalPrimaryButton1.setText("Refresh");
+        hospitalPrimaryButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalPrimaryButton1ActionPerformed(evt);
+            }
+        });
+        gradient23.add(hospitalPrimaryButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 310, 90, -1));
 
         accountspanel.add(gradient23, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
 
-        gradient22.add(accountspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+        gradient22.add(accountspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 640, 480));
 
         approvalspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -238,7 +590,7 @@ public class AdminPanel extends javax.swing.JFrame {
 
         approvalspanel.add(gradient28, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
 
-        gradient22.add(approvalspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+        gradient22.add(approvalspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 640, 480));
 
         billspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -258,7 +610,107 @@ public class AdminPanel extends javax.swing.JFrame {
 
         billspanel.add(gradient30, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
 
-        gradient22.add(billspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+        accountspanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel11.setText("Accounts");
+        accountspanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(276, 100, -1, -1));
+
+        javax.swing.GroupLayout gradient32Layout = new javax.swing.GroupLayout(gradient32);
+        gradient32.setLayout(gradient32Layout);
+        gradient32Layout.setHorizontalGroup(
+            gradient32Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 860, Short.MAX_VALUE)
+        );
+        gradient32Layout.setVerticalGroup(
+            gradient32Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        accountspanel1.add(gradient32, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
+
+        billspanel.add(accountspanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+
+        approvalspanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel14.setText("jLabel7");
+        approvalspanel1.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(268, 96, -1, -1));
+
+        javax.swing.GroupLayout gradient33Layout = new javax.swing.GroupLayout(gradient33);
+        gradient33.setLayout(gradient33Layout);
+        gradient33Layout.setHorizontalGroup(
+            gradient33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 860, Short.MAX_VALUE)
+        );
+        gradient33Layout.setVerticalGroup(
+            gradient33Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        approvalspanel1.add(gradient33, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
+
+        billspanel.add(approvalspanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+
+        billspanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel15.setText("jLabel8");
+        billspanel1.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(293, 128, -1, -1));
+
+        javax.swing.GroupLayout gradient34Layout = new javax.swing.GroupLayout(gradient34);
+        gradient34.setLayout(gradient34Layout);
+        gradient34Layout.setHorizontalGroup(
+            gradient34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 860, Short.MAX_VALUE)
+        );
+        gradient34Layout.setVerticalGroup(
+            gradient34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        billspanel1.add(gradient34, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
+
+        accountspanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel16.setText("Accounts");
+        accountspanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(276, 100, -1, -1));
+
+        javax.swing.GroupLayout gradient35Layout = new javax.swing.GroupLayout(gradient35);
+        gradient35.setLayout(gradient35Layout);
+        gradient35Layout.setHorizontalGroup(
+            gradient35Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 860, Short.MAX_VALUE)
+        );
+        gradient35Layout.setVerticalGroup(
+            gradient35Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        accountspanel2.add(gradient35, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
+
+        billspanel1.add(accountspanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+
+        approvalspanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel17.setText("jLabel7");
+        approvalspanel2.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(268, 96, -1, -1));
+
+        javax.swing.GroupLayout gradient36Layout = new javax.swing.GroupLayout(gradient36);
+        gradient36.setLayout(gradient36Layout);
+        gradient36Layout.setHorizontalGroup(
+            gradient36Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 860, Short.MAX_VALUE)
+        );
+        gradient36Layout.setVerticalGroup(
+            gradient36Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+        );
+
+        approvalspanel2.add(gradient36, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
+
+        billspanel1.add(approvalspanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+
+        billspanel.add(billspanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+
+        gradient22.add(billspanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 640, 480));
 
         transactionpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -278,7 +730,7 @@ public class AdminPanel extends javax.swing.JFrame {
 
         transactionpanel.add(gradient31, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
 
-        gradient22.add(transactionpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 410, 640, 480));
+        gradient22.add(transactionpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 640, 480));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(44, 62, 80));
@@ -290,6 +742,26 @@ public class AdminPanel extends javax.swing.JFrame {
         namelabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         namelabel.setText("...");
         gradient22.add(namelabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 90, 430, -1));
+
+        labelapproval.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        labelapproval.setForeground(new java.awt.Color(44, 62, 80));
+        labelapproval.setText("0");
+        gradient22.add(labelapproval, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 180, 40, -1));
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(44, 62, 80));
+        jLabel12.setText("Awaiting for Account Approvals:");
+        gradient22.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 180, -1, -1));
+
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(44, 62, 80));
+        jLabel13.setText("Awaiting for Bill Approvals:");
+        gradient22.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 220, -1, -1));
+
+        labelbill.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        labelbill.setForeground(new java.awt.Color(44, 62, 80));
+        labelbill.setText("0");
+        gradient22.add(labelbill, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 220, 40, -1));
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -322,6 +794,7 @@ public class AdminPanel extends javax.swing.JFrame {
         billspanel.setVisible(false);
         transactionpanel.setVisible(false);
         accountspanel.setVisible(true);
+        loadAccountsFromDatabase();
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
@@ -344,6 +817,78 @@ public class AdminPanel extends javax.swing.JFrame {
         billspanel.setVisible(false);
         transactionpanel.setVisible(true);
     }//GEN-LAST:event_jLabel5MouseClicked
+
+    private void hospitalSuccessButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalSuccessButton3ActionPerformed
+        performSearch();
+    }//GEN-LAST:event_hospitalSuccessButton3ActionPerformed
+
+    private void hospitalEmergencyButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalEmergencyButton2ActionPerformed
+        clearSearch();
+    }//GEN-LAST:event_hospitalEmergencyButton2ActionPerformed
+
+    private void searchTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            performSearch();
+        }
+    }//GEN-LAST:event_searchTextFieldKeyPressed
+
+    private void hospitalSuccessButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalSuccessButton1ActionPerformed
+        String user = JOptionPane.showInputDialog(null, "Enter username:");
+        if (user != null && !user.trim().isEmpty()) {
+            String password = JOptionPane.showInputDialog(null, "Enter password:");
+            if (password != null && !password.trim().isEmpty()) {
+                String type = JOptionPane.showInputDialog(null, "Enter type (Admin/Employee/Patient):");
+                if (type != null && !type.trim().isEmpty()) {
+                    String finaltype = type.toUpperCase();
+                    String approved = "true";
+
+                    if (finaltype.equals("ADMIN") || finaltype.equals("EMPLOYEE") || finaltype.equals("PATIENT")) {
+                        addAccountToDatabase(user, password, finaltype, approved);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid type entered. Must be Admin, Employee, or Patient.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Type cannot be empty.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Password cannot be empty.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Username cannot be empty.");
+        }
+    }//GEN-LAST:event_hospitalSuccessButton1ActionPerformed
+
+    private void hospitalSuccessButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalSuccessButton2ActionPerformed
+        Object[] selectedData = getSelectedAccountData();
+        if (selectedData != null) {
+            String oldUser = (String) selectedData[0];
+            
+            String newUser = JOptionPane.showInputDialog(this, "Username:", selectedData[0]);
+            if (newUser != null) {
+                String password = JOptionPane.showInputDialog(this, "Password:", selectedData[1]);
+                String type = JOptionPane.showInputDialog(this, "Type:", selectedData[2]);
+                String approved = JOptionPane.showInputDialog(this, "Approved:", selectedData[3]);
+                
+                updateAccountInDatabase(oldUser, newUser, password, type, approved);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select an account to edit!", "No Selection", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_hospitalSuccessButton2ActionPerformed
+
+    private void hospitalEmergencyButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalEmergencyButton1ActionPerformed
+        Object[] selectedData = getSelectedAccountData();
+        if (selectedData != null) {
+            String user = (String) selectedData[0];
+            deleteAccountFromDatabase(user);
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select an account to delete!", "No Selection", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_hospitalEmergencyButton1ActionPerformed
+
+    private void hospitalPrimaryButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalPrimaryButton1ActionPerformed
+        refreshTable();
+    }//GEN-LAST:event_hospitalPrimaryButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -382,10 +927,16 @@ public class AdminPanel extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel accountspanel;
+    private javax.swing.JPanel accountspanel1;
+    private javax.swing.JPanel accountspanel2;
     private javax.swing.JPanel accountsside;
+    private hospital.management.AdminTable adminTable;
     private javax.swing.JPanel approvalspanel;
+    private javax.swing.JPanel approvalspanel1;
+    private javax.swing.JPanel approvalspanel2;
     private javax.swing.JPanel approvalsside;
     private javax.swing.JPanel billspanel;
+    private javax.swing.JPanel billspanel1;
     private javax.swing.JPanel billsside;
     private hospital.management.Gradient2 gradient21;
     private hospital.management.Gradient2 gradient22;
@@ -398,19 +949,40 @@ public class AdminPanel extends javax.swing.JFrame {
     private hospital.management.Gradient2 gradient29;
     private hospital.management.Gradient2 gradient30;
     private hospital.management.Gradient2 gradient31;
+    private hospital.management.Gradient2 gradient32;
+    private hospital.management.Gradient2 gradient33;
+    private hospital.management.Gradient2 gradient34;
+    private hospital.management.Gradient2 gradient35;
+    private hospital.management.Gradient2 gradient36;
     private javax.swing.JPanel homeside;
+    private hospital.management.HospitalEmergencyButton hospitalEmergencyButton1;
+    private hospital.management.HospitalEmergencyButton hospitalEmergencyButton2;
+    private hospital.management.HospitalPrimaryButton hospitalPrimaryButton1;
+    private hospital.management.HospitalSuccessButton hospitalSuccessButton1;
+    private hospital.management.HospitalSuccessButton hospitalSuccessButton2;
+    private hospital.management.HospitalSuccessButton hospitalSuccessButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel labelapproval;
+    private javax.swing.JLabel labelbill;
     private javax.swing.JLabel namelabel;
+    private javax.swing.JComboBox<String> searchColumnComboBox;
+    private javax.swing.JTextField searchTextField;
     private javax.swing.JPanel sidepanel;
     private javax.swing.JPanel transactionpanel;
     private javax.swing.JPanel transactionsside;
