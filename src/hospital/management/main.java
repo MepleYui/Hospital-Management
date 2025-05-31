@@ -30,6 +30,17 @@ public class main extends javax.swing.JFrame {
         }
         
     }
+    
+    public void closeDatabaseConnection() {
+        try {
+            if (con != null && !con.isClosed()) {
+                con.close();
+                System.out.println("Database connection closed.");
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error closing database connection: " + ex.getMessage());
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -187,6 +198,7 @@ public class main extends javax.swing.JFrame {
                 AdminPanel adminPanel = new AdminPanel(userData);
                 adminPanel.setVisible(true);
                 dispose();
+                closeDatabaseConnection();
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid login, not approved, or wrong type.");
             }
