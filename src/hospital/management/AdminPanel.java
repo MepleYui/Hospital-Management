@@ -874,18 +874,27 @@ public class AdminPanel extends javax.swing.JFrame {
         gradient29 = new hospital.management.Gradient2();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
         accountsside = new javax.swing.JPanel();
         gradient25 = new hospital.management.Gradient2();
         jLabel2 = new javax.swing.JLabel();
+        jSeparator3 = new javax.swing.JSeparator();
         approvalsside = new javax.swing.JPanel();
         gradient26 = new hospital.management.Gradient2();
         jLabel3 = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
         billsside = new javax.swing.JPanel();
         gradient27 = new hospital.management.Gradient2();
         jLabel4 = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
         transactionsside = new javax.swing.JPanel();
         gradient21 = new hospital.management.Gradient2();
         jLabel5 = new javax.swing.JLabel();
+        jSeparator6 = new javax.swing.JSeparator();
+        jSeparator7 = new javax.swing.JSeparator();
+        jSeparator8 = new javax.swing.JSeparator();
+        jSeparator9 = new javax.swing.JSeparator();
+        jLabel6 = new javax.swing.JLabel();
         accountspanel = new javax.swing.JPanel();
         gradient23 = new hospital.management.Gradient2();
         adminTable = new hospital.management.AdminTable();
@@ -940,6 +949,8 @@ public class AdminPanel extends javax.swing.JFrame {
         labelbill = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         labelregister = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        labeltransactions = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -972,6 +983,7 @@ public class AdminPanel extends javax.swing.JFrame {
         });
         gradient29.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 120, -1, -1));
         gradient29.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, -1, -1));
+        gradient29.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 220, -1));
 
         homeside.add(gradient29, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -110, 220, 480));
 
@@ -997,6 +1009,7 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
         gradient25.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(73, 160, -1, -1));
+        gradient25.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 220, -1));
 
         accountsside.add(gradient25, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -150, 220, 480));
 
@@ -1016,6 +1029,7 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
         gradient26.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 200, -1, -1));
+        gradient26.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 220, -1));
 
         approvalsside.add(gradient26, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -190, 220, 480));
 
@@ -1035,6 +1049,7 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
         gradient27.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(93, 240, -1, -1));
+        gradient27.add(jSeparator5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 220, -1));
 
         billsside.add(gradient27, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -230, 220, 480));
 
@@ -1054,10 +1069,17 @@ public class AdminPanel extends javax.swing.JFrame {
             }
         });
         gradient21.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(58, 280, -1, -1));
+        gradient21.add(jSeparator6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 220, -1));
 
         transactionsside.add(gradient21, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -270, 220, 480));
 
         gradient24.add(transactionsside, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 220, 40));
+        gradient24.add(jSeparator7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, -1, -1));
+        gradient24.add(jSeparator8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, -1, -1));
+        gradient24.add(jSeparator9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, 220, -1));
+
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Pictures/admincar.png"))); // NOI18N
+        gradient24.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 340, 200, 140));
 
         javax.swing.GroupLayout sidepanelLayout = new javax.swing.GroupLayout(sidepanel);
         sidepanel.setLayout(sidepanelLayout);
@@ -1120,7 +1142,7 @@ public class AdminPanel extends javax.swing.JFrame {
                 hospitalSuccessButton3ActionPerformed(evt);
             }
         });
-        gradient23.add(hospitalSuccessButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 90, 80, -1));
+        gradient23.add(hospitalSuccessButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 95, 80, -1));
 
         hospitalEmergencyButton2.setText("Clear");
         hospitalEmergencyButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -1128,7 +1150,7 @@ public class AdminPanel extends javax.swing.JFrame {
                 hospitalEmergencyButton2ActionPerformed(evt);
             }
         });
-        gradient23.add(hospitalEmergencyButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 90, 80, -1));
+        gradient23.add(hospitalEmergencyButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 95, 80, -1));
 
         hospitalPrimaryButton1.setText("Refresh");
         hospitalPrimaryButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -1136,7 +1158,7 @@ public class AdminPanel extends javax.swing.JFrame {
                 hospitalPrimaryButton1ActionPerformed(evt);
             }
         });
-        gradient23.add(hospitalPrimaryButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 310, 90, -1));
+        gradient23.add(hospitalPrimaryButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 320, 90, -1));
 
         accountspanel.add(gradient23, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
 
@@ -1396,6 +1418,16 @@ public class AdminPanel extends javax.swing.JFrame {
         labelregister.setForeground(new java.awt.Color(44, 62, 80));
         labelregister.setText("0");
         gradient22.add(labelregister, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 260, 40, -1));
+
+        jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(44, 62, 80));
+        jLabel19.setText("Total Transactions:");
+        gradient22.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 300, -1, -1));
+
+        labeltransactions.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        labeltransactions.setForeground(new java.awt.Color(44, 62, 80));
+        labeltransactions.setText("0");
+        gradient22.add(labeltransactions, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 300, 40, -1));
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1861,14 +1893,25 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JSeparator jSeparator7;
+    private javax.swing.JSeparator jSeparator8;
+    private javax.swing.JSeparator jSeparator9;
     private javax.swing.JLabel labelapproval;
     private javax.swing.JLabel labelbill;
     private javax.swing.JLabel labelregister;
+    private javax.swing.JLabel labeltransactions;
     private javax.swing.JLabel namelabel;
     private javax.swing.JComboBox<String> searchColumnComboBox;
     private javax.swing.JTextField searchTextField;
