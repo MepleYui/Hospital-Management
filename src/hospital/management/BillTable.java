@@ -283,4 +283,18 @@ public class BillTable extends JPanel {
         }
         return count;
     }
+    
+    public int getPendingTransactionCount() {
+        int count = 0;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            Object approvedObj = tableModel.getValueAt(i, 4); // Approved column
+            if (approvedObj != null) {
+                String approved = approvedObj.toString();
+                if ("Pending".equalsIgnoreCase(approved)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
 }

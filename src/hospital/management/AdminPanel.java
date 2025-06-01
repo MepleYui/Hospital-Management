@@ -41,6 +41,8 @@ public class AdminPanel extends javax.swing.JFrame {
         updateRegisteredAccountsCount();
         updateApprovalsCount();
         
+        labeltransactions.setText(String.valueOf(billTable1.getApprovedTransactionCount()));
+        labelbill.setText(String.valueOf(billTable1.getPendingTransactionCount()));
         String username = userData.get("username");
         namelabel.setText(username);
     }
@@ -1451,6 +1453,8 @@ public class AdminPanel extends javax.swing.JFrame {
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
         updateRegisteredAccountsCount();
         updateApprovalsCount();
+        labeltransactions.setText(String.valueOf(billTable1.getApprovedTransactionCount()));
+        labelbill.setText(String.valueOf(billTable1.getPendingTransactionCount()));
         accountspanel.setVisible(false);
         approvalspanel.setVisible(false);
         billspanel.setVisible(false);
