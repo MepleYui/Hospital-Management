@@ -336,8 +336,6 @@ public class AdminPanel extends javax.swing.JFrame {
             if (result > 0) {
                 // Refresh table data
                 loadAccountsFromDatabase();
-                JOptionPane.showMessageDialog(this, "Account updated successfully!", 
-                                            "Success", JOptionPane.INFORMATION_MESSAGE);
                 return true;
             } else {
                 JOptionPane.showMessageDialog(this, "Account not found or no changes made!", 
@@ -548,6 +546,14 @@ public class AdminPanel extends javax.swing.JFrame {
         }
         return null;
 }
+    
+    private boolean isValidInput(String input, String fieldName) {
+        if (input == null || input.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, fieldName + " cannot be empty.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
     
     //approve accounts
     public boolean approveAccountFromDatabase(String user) {
@@ -1466,46 +1472,182 @@ public class AdminPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_searchTextFieldKeyPressed
 
     private void hospitalSuccessButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalSuccessButton1ActionPerformed
-        String user = JOptionPane.showInputDialog(null, "Enter username:");
-        if (user != null && !user.trim().isEmpty()) {
-            String password = JOptionPane.showInputDialog(null, "Enter password:");
-            if (password != null && !password.trim().isEmpty()) {
-                String type = JOptionPane.showInputDialog(null, "Enter type (Admin/Employee/Patient):");
-                if (type != null && !type.trim().isEmpty()) {
-                    String finaltype = type.toUpperCase();
-                    String approved = "true";
+        String user = JOptionPane.showInputDialog(this, "Enter username:");
+        if (!isValidInput(user, "Username")) return;
 
-                    if (finaltype.equals("ADMIN") || finaltype.equals("EMPLOYEE") || finaltype.equals("PATIENT")) {
-                        addAccountToDatabase(user, password, finaltype, approved);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Invalid type entered. Must be Admin, Employee, or Patient.");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Type cannot be empty.");
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "Password cannot be empty.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "Username cannot be empty.");
+        // Get password
+        String password = JOptionPane.showInputDialog(this, "Enter password:");
+        if (!isValidInput(password, "Password")) return;
+
+        // Get type with dropdown selection
+        String[] typeOptions = {"Admin", "Employee", "Patient"};
+        String type = (String) JOptionPane.showInputDialog(
+            this,
+            "Select account type:",
+            "Account Type",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            typeOptions,
+            typeOptions[0] // Default selection
+        );
+
+        // Check if user cancelled or didn't select anything
+        if (type == null) {
+            JOptionPane.showMessageDialog(this, "Account type selection cancelled.", 
+                                        "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
+
+        // Add account to database
+        String approved = "true";
+        addAccountToDatabase(user.trim(), password.trim(), type.toUpperCase(), approved);
     }//GEN-LAST:event_hospitalSuccessButton1ActionPerformed
 
     private void hospitalSuccessButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalSuccessButton2ActionPerformed
         Object[] selectedData = getSelectedAccountData();
         if (selectedData != null) {
             String oldUser = (String) selectedData[0];
-            
-            String newUser = JOptionPane.showInputDialog(this, "Username:", selectedData[0]);
-            if (newUser != null) {
-                String password = JOptionPane.showInputDialog(this, "Password:", selectedData[1]);
-                String type = JOptionPane.showInputDialog(this, "Type:", selectedData[2]);
-                String approved = JOptionPane.showInputDialog(this, "Approved:", selectedData[3]);
-                
-                updateAccountInDatabase(oldUser, newUser, password, type, approved);
+            String currentUser = oldUser;
+            String currentPassword = (String) selectedData[1];
+            String currentType = (String) selectedData[2];
+            String currentApproved = (String) selectedData[3];
+
+            boolean continueEditing = true;
+            StringBuilder editLog = new StringBuilder("Edit Results:\n");
+            boolean hasChanges = false;
+
+            while (continueEditing) {
+                // Show current values and ask which column to edit
+                String[] columns = {"Username", "Password", "Type", "Approved", "Finish Editing"};
+                String currentValues = String.format(
+                    "Current Values:\nUsername: %s\nPassword: %s\nType: %s\nApproved: %s\n\nWhich column would you like to edit?",
+                    currentUser, currentPassword, currentType, currentApproved
+                );
+
+                String selectedColumn = (String) JOptionPane.showInputDialog(
+                    this,
+                    currentValues,
+                    "Select Column to Edit",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    columns,
+                    columns[0]
+                );
+
+                if (selectedColumn == null || selectedColumn.equals("Finish Editing")) {
+                    continueEditing = false;
+                } else {
+                    String oldValue = "";
+                    String newValue = "";
+
+                    switch (selectedColumn) {
+                        case "Username":
+                            oldValue = currentUser;
+                            newValue = JOptionPane.showInputDialog(this, "Enter new Username:", currentUser);
+                            if (newValue != null && !newValue.equals(oldValue)) {
+                                currentUser = newValue;
+                                editLog.append(String.format("Username: '%s' → '%s'\n", oldValue, newValue));
+                                hasChanges = true;
+                            }
+                            break;
+
+                        case "Password":
+                            oldValue = currentPassword;
+                            newValue = JOptionPane.showInputDialog(this, "Enter new Password:", currentPassword);
+                            if (newValue != null && !newValue.equals(oldValue)) {
+                                currentPassword = newValue;
+                                editLog.append(String.format("Password: '%s' → '%s'\n", oldValue, newValue));
+                                hasChanges = true;
+                            }
+                            break;
+
+                        case "Type":
+                            oldValue = currentType;
+                            String[] typeOptions = {"ADMIN", "EMPLOYEE", "PATIENT"};
+                            newValue = (String) JOptionPane.showInputDialog(
+                                this,
+                                "Select new Type:",
+                                "Edit Type",
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,
+                                typeOptions,
+                                currentType
+                            );
+                            if (newValue != null && !newValue.equals(oldValue)) {
+                                currentType = newValue;
+                                editLog.append(String.format("Type: '%s' → '%s'\n", oldValue, newValue));
+                                hasChanges = true;
+                            }
+                            break;
+
+                        case "Approved":
+                            oldValue = currentApproved;
+                            String[] approvedOptions = {"true", "false"};
+                            newValue = (String) JOptionPane.showInputDialog(
+                                this,
+                                "Select new Approved status:",
+                                "Edit Approved Status",
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,
+                                approvedOptions,
+                                currentApproved
+                            );
+                            if (newValue != null && !newValue.equals(oldValue)) {
+                                currentApproved = newValue;
+                                editLog.append(String.format("Approved: '%s' → '%s'\n", oldValue, newValue));
+                                hasChanges = true;
+                            }
+                            break;
+                    }
+
+                    // If user cancelled the input, ask if they want to continue
+                    if (newValue == null) {
+                        int choice = JOptionPane.showConfirmDialog(
+                            this,
+                            "Edit cancelled. Do you want to continue editing other columns?",
+                            "Continue Editing?",
+                            JOptionPane.YES_NO_OPTION
+                        );
+                        continueEditing = (choice == JOptionPane.YES_OPTION);
+                    }
+                }
             }
+
+            // If changes were made, update database and show results
+            if (hasChanges) {
+                try {
+                    updateAccountInDatabase(oldUser, currentUser, currentPassword, currentType, currentApproved);
+                    editLog.append("\n✓ Changes saved successfully to database!");
+                    JOptionPane.showMessageDialog(
+                        this,
+                        editLog.toString(),
+                        "Edit Complete",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Error saving changes: " + e.getMessage(),
+                        "Database Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            } else {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "No changes were made.",
+                    "Edit Complete",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+
         } else {
-            JOptionPane.showMessageDialog(this, "Please select an account to edit!", "No Selection", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(
+                this, 
+                "Please select an account to edit!", 
+                "No Selection", 
+                JOptionPane.WARNING_MESSAGE
+            );
         }
     }//GEN-LAST:event_hospitalSuccessButton2ActionPerformed
 
