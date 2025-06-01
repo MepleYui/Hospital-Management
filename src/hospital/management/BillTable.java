@@ -29,7 +29,7 @@ public class BillTable extends JPanel {
     private void initializeTable() {
         // Create table model with transaction columns
         String[] columnNames = {
-            "ID", "User", "Amount", "Employee", "Approved"
+            "ID", "User", "Amount", "Employee", "Approval"
         };
         
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -73,8 +73,8 @@ public class BillTable extends JPanel {
         columnModel.getColumn(0).setPreferredWidth(80);  // ID
         columnModel.getColumn(1).setPreferredWidth(150); // User
         columnModel.getColumn(2).setPreferredWidth(120); // Amount
-        columnModel.getColumn(3).setPreferredWidth(150); // Employee
-        columnModel.getColumn(4).setPreferredWidth(100); // Approved
+        columnModel.getColumn(3).setPreferredWidth(130); // Employee
+        columnModel.getColumn(4).setPreferredWidth(120); // Approved
     }
     
     private void setupTableBehavior() {
@@ -153,7 +153,7 @@ public class BillTable extends JPanel {
                 String approved = (String) value;
                 if ("Approved".equalsIgnoreCase(approved)) {
                     c.setForeground(new Color(39, 174, 96)); // Green
-                } else if ("Pending".equalsIgnoreCase(approved) || "Denied".equals(approved)) {
+                } else if ("Pending".equalsIgnoreCase(approved) || "Rejected".equalsIgnoreCase(approved)) {
                     c.setForeground(new Color(231, 76, 60)); // Red
                 }
                 setHorizontalAlignment(SwingConstants.CENTER); // Center-align status
