@@ -36,6 +36,7 @@ public class AdminPanel extends javax.swing.JFrame {
         transactionpanel.setVisible(false);
         loadAccountsFromDatabase();
         loadApprovalsFromDatabase();
+        loadPendingTransactionFromDatabase();
         updateRegisteredAccountsCount();
         updateApprovalsCount();
         
@@ -181,6 +182,46 @@ public class AdminPanel extends javax.swing.JFrame {
         }
     }
     
+    // Load all pending transactions from database into the BillTable
+    public void loadPendingTransactionFromDatabase() {
+        if (con == null) {
+            JOptionPane.showMessageDialog(this, "No database connection!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Updated query for transactions table with the correct columns
+            String query = "SELECT id, user, amount, employee, approved FROM transaction WHERE approved = 'false' OR approved = 'pending'";
+            PreparedStatement pst = con.prepareStatement(query);
+            ResultSet rs = pst.executeQuery();
+
+            // Create list to store data
+            List<Object[]> dataList = new ArrayList<>();
+
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("id"),
+                    rs.getString("user"),
+                    rs.getDouble("amount"),  // Using getDouble for amount column
+                    rs.getString("employee"),
+                    rs.getString("approved")
+                };
+                dataList.add(row);
+            }
+
+            // Convert list to array and load into BillTable
+            Object[][] data = dataList.toArray(new Object[0][]);
+            billTable.loadDataFromDatabase(data);  // Changed from approvaltable to billTable
+
+            rs.close();
+            pst.close();
+
+        } catch (SQLException ex) {
+            System.out.println("Error loading pending transactions: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error loading pending transactions: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     //Add accounts to database
     public boolean addAccountToDatabase(String user, String password, String type, String approved) {
         if (con == null) {
@@ -312,6 +353,48 @@ public class AdminPanel extends javax.swing.JFrame {
         return false;
     }
     
+    //Delete transactions from database
+    public boolean deleteTransactionFromDatabase(String user) {
+        if (con == null) {
+            JOptionPane.showMessageDialog(this, "No database connection!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        try {
+            // Confirm deletion
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to delete the transaction id: " + user + "?", 
+                "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                String query = "DELETE FROM transaction WHERE ID=?";
+                PreparedStatement pst = con.prepareStatement(query);
+                pst.setString(1, user);
+                
+                int result = pst.executeUpdate();
+                pst.close();
+                
+                if (result > 0) {
+                    // Remove from table display
+                    int selectedRow = billTable.getSelectedRow();
+                    if (selectedRow >= 0) {
+                        billTable.removeUser(selectedRow);
+                    }
+                    JOptionPane.showMessageDialog(this, "Transaction deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Account not found!", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+            
+        } catch (SQLException ex) {
+            System.out.println("Error deleting account: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error deleting account: " + ex.getMessage(), 
+                                        "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
+    }
+    
     //Deny accounts
     public boolean denyAccountFromDatabase(String user) {
         if (con == null) {
@@ -374,6 +457,15 @@ public class AdminPanel extends javax.swing.JFrame {
         return null;
     }
     
+    public Object[] getSelectedApprovalBillData() {
+        int selectedRow = billTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            return billTable.getRowData(selectedRow);
+        }
+        return null;
+    }
+    
+    //approve accounts
     public boolean approveAccountFromDatabase(String user) {
         if (con == null) {
             JOptionPane.showMessageDialog(this, "No database connection!", 
@@ -427,6 +519,93 @@ public class AdminPanel extends javax.swing.JFrame {
         } catch (SQLException ex) {
             System.out.println("Error closing database connection: " + ex.getMessage());
         }
+    }
+    
+    //approve bills
+    public boolean approveBillsFromDatabase(String user) {
+        if (con == null) {
+            JOptionPane.showMessageDialog(this, "No database connection!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        try {
+            // Confirm approval
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to Approve the transaction id: " + user + "?", 
+                "Confirm Approval", JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                String query = "UPDATE transaction SET approved = 'APPROVED' WHERE ID = ?";
+                PreparedStatement pst = con.prepareStatement(query);
+                pst.setString(1, user);
+
+                int result = pst.executeUpdate();
+                pst.close();
+
+                if (result > 0) {
+                    // Remove from table display (since it's no longer pending approval)
+                    int selectedRow = billTable.getSelectedRow();
+                    if (selectedRow >= 0) {
+                        billTable.removeUser(selectedRow);
+                    }
+                    JOptionPane.showMessageDialog(this, "Bill approved successfully!", 
+                                                "Success", JOptionPane.INFORMATION_MESSAGE);
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Account not found!", 
+                                                "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("Error approving bill for the account: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error approving account: " + ex.getMessage(), 
+                                        "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
+    }
+
+    //deny bills
+    public boolean denyBillsFromDatabase(String user) {
+        if (con == null) {
+            JOptionPane.showMessageDialog(this, "No database connection!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        try {
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to Deny the transaction id: " + user + "?", 
+                "Confirm Approval", JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                String query = "UPDATE transaction SET approved = 'DENIED' WHERE ID = ?";
+                PreparedStatement pst = con.prepareStatement(query);
+                pst.setString(1, user);
+
+                int result = pst.executeUpdate();
+                pst.close();
+
+                if (result > 0) {
+                    // Remove from table display (since it's no longer pending approval)
+                    int selectedRow = billTable.getSelectedRow();
+                    if (selectedRow >= 0) {
+                        billTable.removeUser(selectedRow);
+                    }
+                    JOptionPane.showMessageDialog(this, "Bill has been Denied successfully!", 
+                                                "Success", JOptionPane.INFORMATION_MESSAGE);
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Account not found!", 
+                                                "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("Error dening bill for the account: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error approving account: " + ex.getMessage(), 
+                                        "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
     }
     
     
@@ -553,8 +732,11 @@ public class AdminPanel extends javax.swing.JFrame {
         hospitalSuccessButton4 = new hospital.management.HospitalSuccessButton();
         hospitalEmergencyButton3 = new hospital.management.HospitalEmergencyButton();
         billspanel = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
         gradient30 = new hospital.management.Gradient2();
+        billTable = new hospital.management.BillTable();
+        hospitalSuccessButton5 = new hospital.management.HospitalSuccessButton();
+        hospitalEmergencyButton4 = new hospital.management.HospitalEmergencyButton();
+        hospitalEmergencyButton5 = new hospital.management.HospitalEmergencyButton();
         accountspanel1 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         gradient32 = new hospital.management.Gradient2();
@@ -571,7 +753,6 @@ public class AdminPanel extends javax.swing.JFrame {
         jLabel17 = new javax.swing.JLabel();
         gradient36 = new hospital.management.Gradient2();
         transactionpanel = new javax.swing.JPanel();
-        jLabel9 = new javax.swing.JLabel();
         gradient31 = new hospital.management.Gradient2();
         jLabel10 = new javax.swing.JLabel();
         namelabel = new javax.swing.JLabel();
@@ -810,19 +991,32 @@ public class AdminPanel extends javax.swing.JFrame {
 
         billspanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel8.setText("jLabel8");
-        billspanel.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(293, 128, -1, -1));
+        gradient30.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        gradient30.add(billTable, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, -1, 480));
 
-        javax.swing.GroupLayout gradient30Layout = new javax.swing.GroupLayout(gradient30);
-        gradient30.setLayout(gradient30Layout);
-        gradient30Layout.setHorizontalGroup(
-            gradient30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 860, Short.MAX_VALUE)
-        );
-        gradient30Layout.setVerticalGroup(
-            gradient30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 480, Short.MAX_VALUE)
-        );
+        hospitalSuccessButton5.setText("Approve");
+        hospitalSuccessButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalSuccessButton5ActionPerformed(evt);
+            }
+        });
+        gradient30.add(hospitalSuccessButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(705, 170, -1, -1));
+
+        hospitalEmergencyButton4.setText("Deny");
+        hospitalEmergencyButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalEmergencyButton4ActionPerformed(evt);
+            }
+        });
+        gradient30.add(hospitalEmergencyButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(705, 220, -1, -1));
+
+        hospitalEmergencyButton5.setText("Delete");
+        hospitalEmergencyButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hospitalEmergencyButton5ActionPerformed(evt);
+            }
+        });
+        gradient30.add(hospitalEmergencyButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(705, 270, -1, -1));
 
         billspanel.add(gradient30, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
 
@@ -930,20 +1124,7 @@ public class AdminPanel extends javax.swing.JFrame {
 
         transactionpanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel9.setText("jLabel9");
-        transactionpanel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(244, 113, -1, -1));
-
-        javax.swing.GroupLayout gradient31Layout = new javax.swing.GroupLayout(gradient31);
-        gradient31.setLayout(gradient31Layout);
-        gradient31Layout.setHorizontalGroup(
-            gradient31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 860, Short.MAX_VALUE)
-        );
-        gradient31Layout.setVerticalGroup(
-            gradient31Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 480, Short.MAX_VALUE)
-        );
-
+        gradient31.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         transactionpanel.add(gradient31, new org.netbeans.lib.awtextra.AbsoluteConstraints(-220, 0, 860, 480));
 
         gradient22.add(transactionpanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 640, 480));
@@ -1038,6 +1219,7 @@ public class AdminPanel extends javax.swing.JFrame {
         approvalspanel.setVisible(false);
         transactionpanel.setVisible(false);
         billspanel.setVisible(true);
+        loadPendingTransactionFromDatabase();
     }//GEN-LAST:event_jLabel4MouseClicked
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
@@ -1143,6 +1325,36 @@ public class AdminPanel extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_hospitalEmergencyButton3ActionPerformed
 
+    private void hospitalSuccessButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalSuccessButton5ActionPerformed
+        Object[] selectedData = getSelectedApprovalBillData();
+        if (selectedData != null) {
+            String user = (String) selectedData[0];
+            approveBillsFromDatabase(user);
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a bill to approve!", "No Selection", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_hospitalSuccessButton5ActionPerformed
+
+    private void hospitalEmergencyButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalEmergencyButton4ActionPerformed
+        Object[] selectedData = getSelectedApprovalBillData();
+        if (selectedData != null) {
+            String user = (String) selectedData[0];
+            denyBillsFromDatabase(user);
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a bill to deny!", "No Selection", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_hospitalEmergencyButton4ActionPerformed
+
+    private void hospitalEmergencyButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hospitalEmergencyButton5ActionPerformed
+        Object[] selectedData = getSelectedApprovalBillData();
+        if (selectedData != null) {
+            String user = (String) selectedData[0];
+            deleteAccountFromDatabase(user);
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a bill to delete!", "No Selection", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_hospitalEmergencyButton5ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1189,6 +1401,7 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JPanel approvalspanel2;
     private javax.swing.JPanel approvalsside;
     private hospital.management.AdminTable approvaltable;
+    private hospital.management.BillTable billTable;
     private javax.swing.JPanel billspanel;
     private javax.swing.JPanel billspanel1;
     private javax.swing.JPanel billsside;
@@ -1212,11 +1425,14 @@ public class AdminPanel extends javax.swing.JFrame {
     private hospital.management.HospitalEmergencyButton hospitalEmergencyButton1;
     private hospital.management.HospitalEmergencyButton hospitalEmergencyButton2;
     private hospital.management.HospitalEmergencyButton hospitalEmergencyButton3;
+    private hospital.management.HospitalEmergencyButton hospitalEmergencyButton4;
+    private hospital.management.HospitalEmergencyButton hospitalEmergencyButton5;
     private hospital.management.HospitalPrimaryButton hospitalPrimaryButton1;
     private hospital.management.HospitalSuccessButton hospitalSuccessButton1;
     private hospital.management.HospitalSuccessButton hospitalSuccessButton2;
     private hospital.management.HospitalSuccessButton hospitalSuccessButton3;
     private hospital.management.HospitalSuccessButton hospitalSuccessButton4;
+    private hospital.management.HospitalSuccessButton hospitalSuccessButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1231,8 +1447,6 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel labelapproval;
     private javax.swing.JLabel labelbill;
