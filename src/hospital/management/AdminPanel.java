@@ -893,8 +893,6 @@ public class AdminPanel extends javax.swing.JFrame {
         gradient21 = new hospital.management.Gradient2();
         jLabel5 = new javax.swing.JLabel();
         jSeparator6 = new javax.swing.JSeparator();
-        jSeparator7 = new javax.swing.JSeparator();
-        jSeparator8 = new javax.swing.JSeparator();
         jSeparator9 = new javax.swing.JSeparator();
         jLabel6 = new javax.swing.JLabel();
         accountspanel = new javax.swing.JPanel();
@@ -953,6 +951,8 @@ public class AdminPanel extends javax.swing.JFrame {
         labelregister = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         labeltransactions = new javax.swing.JLabel();
+        labelapproval1 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -1076,11 +1076,20 @@ public class AdminPanel extends javax.swing.JFrame {
         transactionsside.add(gradient21, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -270, 220, 480));
 
         gradient24.add(transactionsside, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 220, 40));
-        gradient24.add(jSeparator7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, -1, -1));
-        gradient24.add(jSeparator8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, -1, -1));
         gradient24.add(jSeparator9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 310, 220, -1));
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Pictures/admincar.png"))); // NOI18N
+        jLabel6.setToolTipText("Logout");
+        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel6MouseClicked(evt);
+            }
+        });
+        jLabel6.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jLabel6KeyPressed(evt);
+            }
+        });
         gradient24.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 340, 200, 140));
 
         javax.swing.GroupLayout sidepanelLayout = new javax.swing.GroupLayout(sidepanel);
@@ -1430,6 +1439,16 @@ public class AdminPanel extends javax.swing.JFrame {
         labeltransactions.setForeground(new java.awt.Color(44, 62, 80));
         labeltransactions.setText("0");
         gradient22.add(labeltransactions, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 300, 40, -1));
+
+        labelapproval1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        labelapproval1.setForeground(new java.awt.Color(44, 62, 80));
+        labelapproval1.setText("0");
+        gradient22.add(labelapproval1, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 180, 40, -1));
+
+        jLabel20.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel20.setForeground(new java.awt.Color(44, 62, 80));
+        jLabel20.setText("Awaiting for Account Approvals:");
+        gradient22.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 180, -1, -1));
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1804,6 +1823,28 @@ public class AdminPanel extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_hospitalSuccessButton7ActionPerformed
 
+    private void jLabel6KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jLabel6KeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel6KeyPressed
+
+    private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "Are you sure you want to log out?",
+            "Confirm Logout",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            main mainWindow = new main();
+            mainWindow.setVisible(true);
+            mainWindow.setLocationRelativeTo(null);
+            closeDatabaseConnection();
+            dispose();
+        }
+    }//GEN-LAST:event_jLabel6MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -1899,6 +1940,7 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1909,10 +1951,9 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
-    private javax.swing.JSeparator jSeparator7;
-    private javax.swing.JSeparator jSeparator8;
     private javax.swing.JSeparator jSeparator9;
     private javax.swing.JLabel labelapproval;
+    private javax.swing.JLabel labelapproval1;
     private javax.swing.JLabel labelbill;
     private javax.swing.JLabel labelregister;
     private javax.swing.JLabel labeltransactions;

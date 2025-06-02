@@ -179,30 +179,45 @@ public class main extends javax.swing.JFrame {
         String password = String.valueOf(objpassword);
         Object objtype = jComboBox1.getSelectedItem();
         String type = String.valueOf(objtype);
-        
+
         String sql = "SELECT * FROM accounts WHERE user = ? AND password = ? AND approved = 'true' AND type = ?";
-        
+
         try {
             PreparedStatement pst = con.prepareStatement(sql);
-
             pst.setString(1, user);
-            pst.setString(2, password);
+            pst.setString(2, password); // Password is now case-sensitive
             pst.setString(3, type);
-
             ResultSet rs = pst.executeQuery();
-
             if (rs.next()) {
                 JOptionPane.showMessageDialog(null, "Login successful. Type: " + rs.getString("type"));
                 HashMap<String, String> userData = new HashMap<>();
                 userData.put("username", jTextField1.getText());
-                AdminPanel adminPanel = new AdminPanel(userData);
-                adminPanel.setVisible(true);
-                dispose();
+
+                // Navigate to appropriate panel based on user type
+                String userType = rs.getString("type").toLowerCase();
+                switch (userType) {
+                    case "admin":
+                        AdminPanel adminPanel = new AdminPanel(userData);
+                        adminPanel.setVisible(true);
+                        break;
+                    case "employee":
+                        EmployeePanel employeePanel = new EmployeePanel(userData);
+                        employeePanel.setVisible(true);
+                        break;
+                    case "patient":
+                        PatientPanel patientPanel = new PatientPanel();
+                        patientPanel.setVisible(true);
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(null, "Unknown user type: " + userType);
+                        return; // Don't close login if unknown type
+                }
+
+                dispose(); // Close login window
                 closeDatabaseConnection();
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid login, not approved, or wrong type.");
             }
-
             pst.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error " + ex.getMessage());
